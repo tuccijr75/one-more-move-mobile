@@ -169,6 +169,9 @@ export class GameEngine {
   private animationRunning = false;
   private animFrameId = 0;
   private cellSize = CELL_SIZE;
+  private moveQueue: { dx: number; dy: number }[] = [];
+  private processingQueue = false;
+  pathOverlay: Position[] = [];
 
   constructor(canvas: HTMLCanvasElement, callbacks: EngineCallbacks) {
     this.canvas = canvas;
@@ -199,6 +202,51 @@ export class GameEngine {
 
   move(dx: number, dy: number) {
     this.attemptMove(dx, dy);
+  }
+
+  /** Queue a sequence of moves (from path trace) and execute them one per turn. */
+  queueMoves(moves: { dx: number; dy: number }[]) {
+    if (!moves.length) return;
+    this.moveQueue = [...moves];
+    this.pathOverlay = [];
+    this.processQueue();
+  }
+
+  cancelQueue() {
+    this.moveQueue = [];
+    this.pathOverlay = [];
+  }
+
+  private async processQueue() {
+    if (this.processingQueue) return;
+    this.processingQueue = true;
+    while (this.moveQueue.length > 0) {
+      const s = this.state;
+      if (!s || s.gameOver) break;
+      // Wait for input to be unlocked
+      while (s.inputLocked) {
+        await this.delay(30);
+        if (s.gameOver) { this.moveQueue = []; break; }
+      }
+      if (s.gameOver) break;
+      const m = this.moveQueue.shift()!;
+      this.attemptMove(m.dx, m.dy);
+    }
+    this.moveQueue = [];
+    this.processingQueue = false;
+  }
+
+  getPlayerPos(): Position | null {
+    return this.state ? { ...this.state.player } : null;
+  }
+
+  isWall(x: number, y: number): boolean {
+    if (!this.state) return false;
+    return this.state.walls.has(`${x},${y}`);
+  }
+
+  isInBounds(x: number, y: number): boolean {
+    return this.inBounds(x, y);
   }
 
   tapTile(gridX: number, gridY: number) {
@@ -1309,6 +1357,7 @@ export class GameEngine {
     this.drawIntentTiles();
     this.drawEnemies();
     this.drawPlayer();
+    this.drawPathOverlay();
 
     if (s.effects.freezeUntil && performance.now() < s.effects.freezeUntil && s.effects.killer) {
       const cs = this.cellSize;
@@ -1316,6 +1365,40 @@ export class GameEngine {
       ctx.fillStyle = '#ff6b6b';
       ctx.fillRect(s.effects.killer.x * cs + 2, s.effects.killer.y * cs + 2, cs - 4, cs - 4);
     }
+  }
+
+  private drawPathOverlay() {
+    if (!this.pathOverlay.length) return;
+    const cs = this.cellSize;
+    const ctx = this.ctx;
+    const pad = cs * 0.2;
+
+    // Draw path tiles
+    for (let i = 0; i < this.pathOverlay.length; i++) {
+      const t = this.pathOverlay[i];
+      ctx.globalAlpha = 0.25 - (i * 0.03);
+      if (ctx.globalAlpha < 0.08) ctx.globalAlpha = 0.08;
+      ctx.fillStyle = '#3a7bd5';
+      ctx.fillRect(t.x * cs + pad, t.y * cs + pad, cs - pad * 2, cs - pad * 2);
+    }
+
+    // Draw connecting line
+    if (this.pathOverlay.length >= 1 && this.state) {
+      ctx.globalAlpha = 0.4;
+      ctx.strokeStyle = '#5a9bf5';
+      ctx.lineWidth = cs * 0.08;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      const start = this.state.player;
+      ctx.moveTo(start.x * cs + cs / 2, start.y * cs + cs / 2);
+      for (const t of this.pathOverlay) {
+        ctx.lineTo(t.x * cs + cs / 2, t.y * cs + cs / 2);
+      }
+      ctx.stroke();
+    }
+
+    ctx.globalAlpha = 1;
   }
 
   private animationLoop() {
