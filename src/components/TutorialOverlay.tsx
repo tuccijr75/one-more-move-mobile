@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { X, MoveRight, Hand, Route } from 'lucide-react';
+import { X, MoveRight, Hand, Route, Zap, Shield, Ghost, Snowflake, Timer } from 'lucide-react';
 
 const TUTORIAL_KEY = 'omm_tutorial_seen';
 
@@ -25,6 +25,36 @@ const steps = [
     title: 'Trace a Path',
     desc: 'Drag your finger across multiple tiles to plan a multi-step route. All moves execute in sequence.',
     color: 'hsl(280, 60%, 55%)',
+  },
+  {
+    icon: Zap,
+    title: 'Diagonal Move (D)',
+    desc: 'Earned every 12 turns. Tap a diagonal tile next to your player to move there. Consumes the token on use.',
+    color: 'hsl(45, 90%, 55%)',
+  },
+  {
+    icon: Shield,
+    title: 'Wall Ignore (W)',
+    desc: 'Tap the W icon to arm it, then move into a wall tile — you\'ll pass right through it. One-time use.',
+    color: 'hsl(30, 80%, 50%)',
+  },
+  {
+    icon: Ghost,
+    title: 'Phase Step (F)',
+    desc: 'Tap the F icon to arm it, then swipe in a direction. You\'ll leap 2 tiles, phasing through and stunning any enemy in between.',
+    color: 'hsl(190, 70%, 50%)',
+  },
+  {
+    icon: Snowflake,
+    title: 'Freeze (B)',
+    desc: 'Tap the B icon to freeze all enemies for one turn. They won\'t move, giving you a free step.',
+    color: 'hsl(200, 80%, 65%)',
+  },
+  {
+    icon: Timer,
+    title: 'Time Freeze (TF)',
+    desc: 'Tap TF to stop time — take 2 free moves while enemies stay frozen. Tap TF again to release and resume normal play.',
+    color: 'hsl(320, 65%, 55%)',
   },
 ];
 
