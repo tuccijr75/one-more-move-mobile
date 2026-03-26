@@ -1,7 +1,7 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'app.lovable.744dd0b1766a41cbaab9487e71716c48',
+  appId: 'com.onemoremove.app',
   appName: 'One More Move',
   webDir: 'dist',
 };
