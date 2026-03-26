@@ -169,6 +169,9 @@ export class GameEngine {
   private animationRunning = false;
   private animFrameId = 0;
   private cellSize = CELL_SIZE;
+  private moveQueue: { dx: number; dy: number }[] = [];
+  private processingQueue = false;
+  pathOverlay: Position[] = [];
 
   constructor(canvas: HTMLCanvasElement, callbacks: EngineCallbacks) {
     this.canvas = canvas;
@@ -199,6 +202,51 @@ export class GameEngine {
 
   move(dx: number, dy: number) {
     this.attemptMove(dx, dy);
+  }
+
+  /** Queue a sequence of moves (from path trace) and execute them one per turn. */
+  queueMoves(moves: { dx: number; dy: number }[]) {
+    if (!moves.length) return;
+    this.moveQueue = [...moves];
+    this.pathOverlay = [];
+    this.processQueue();
+  }
+
+  cancelQueue() {
+    this.moveQueue = [];
+    this.pathOverlay = [];
+  }
+
+  private async processQueue() {
+    if (this.processingQueue) return;
+    this.processingQueue = true;
+    while (this.moveQueue.length > 0) {
+      const s = this.state;
+      if (!s || s.gameOver) break;
+      // Wait for input to be unlocked
+      while (s.inputLocked) {
+        await this.delay(30);
+        if (s.gameOver) { this.moveQueue = []; break; }
+      }
+      if (s.gameOver) break;
+      const m = this.moveQueue.shift()!;
+      this.attemptMove(m.dx, m.dy);
+    }
+    this.moveQueue = [];
+    this.processingQueue = false;
+  }
+
+  getPlayerPos(): Position | null {
+    return this.state ? { ...this.state.player } : null;
+  }
+
+  isWall(x: number, y: number): boolean {
+    if (!this.state) return false;
+    return this.state.walls.has(`${x},${y}`);
+  }
+
+  isInBounds(x: number, y: number): boolean {
+    return this.inBounds(x, y);
   }
 
   tapTile(gridX: number, gridY: number) {
