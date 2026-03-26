@@ -11,7 +11,7 @@ workflows:
       node: 18
       java: 17
       android_signing:
-        - keystore_reference  # Upload your keystore in Codemagic > Code signing identities
+        - OneMoreMove
       groups:
         - android_credentials  # Optional: env vars for versioning etc.
       vars:
