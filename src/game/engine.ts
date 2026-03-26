@@ -1357,6 +1357,7 @@ export class GameEngine {
     this.drawIntentTiles();
     this.drawEnemies();
     this.drawPlayer();
+    this.drawPathOverlay();
 
     if (s.effects.freezeUntil && performance.now() < s.effects.freezeUntil && s.effects.killer) {
       const cs = this.cellSize;
@@ -1364,6 +1365,40 @@ export class GameEngine {
       ctx.fillStyle = '#ff6b6b';
       ctx.fillRect(s.effects.killer.x * cs + 2, s.effects.killer.y * cs + 2, cs - 4, cs - 4);
     }
+  }
+
+  private drawPathOverlay() {
+    if (!this.pathOverlay.length) return;
+    const cs = this.cellSize;
+    const ctx = this.ctx;
+    const pad = cs * 0.2;
+
+    // Draw path tiles
+    for (let i = 0; i < this.pathOverlay.length; i++) {
+      const t = this.pathOverlay[i];
+      ctx.globalAlpha = 0.25 - (i * 0.03);
+      if (ctx.globalAlpha < 0.08) ctx.globalAlpha = 0.08;
+      ctx.fillStyle = '#3a7bd5';
+      ctx.fillRect(t.x * cs + pad, t.y * cs + pad, cs - pad * 2, cs - pad * 2);
+    }
+
+    // Draw connecting line
+    if (this.pathOverlay.length >= 1 && this.state) {
+      ctx.globalAlpha = 0.4;
+      ctx.strokeStyle = '#5a9bf5';
+      ctx.lineWidth = cs * 0.08;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      ctx.beginPath();
+      const start = this.state.player;
+      ctx.moveTo(start.x * cs + cs / 2, start.y * cs + cs / 2);
+      for (const t of this.pathOverlay) {
+        ctx.lineTo(t.x * cs + cs / 2, t.y * cs + cs / 2);
+      }
+      ctx.stroke();
+    }
+
+    ctx.globalAlpha = 1;
   }
 
   private animationLoop() {
