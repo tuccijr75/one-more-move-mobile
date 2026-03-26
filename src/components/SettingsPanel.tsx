@@ -1,14 +1,15 @@
 import { type Difficulty } from '@/game/engine';
-import { X } from 'lucide-react';
+import { X, HelpCircle } from 'lucide-react';
 
 interface SettingsPanelProps {
   open: boolean;
   onClose: () => void;
   difficulty: string;
   onDifficulty: (d: Difficulty) => void;
+  onShowTutorial: () => void;
 }
 
-export default function SettingsPanel({ open, onClose, difficulty, onDifficulty }: SettingsPanelProps) {
+export default function SettingsPanel({ open, onClose, difficulty, onDifficulty, onShowTutorial }: SettingsPanelProps) {
   if (!open) return null;
 
   const diffs: { label: string; value: Difficulty; desc: string }[] = [
@@ -48,20 +49,14 @@ export default function SettingsPanel({ open, onClose, difficulty, onDifficulty 
           ))}
         </div>
 
-        <div className="pt-2 space-y-1">
-          <p className="text-xs font-mono" style={{ color: 'hsl(0, 0%, 50%)' }}>CONTROLS</p>
-          <div className="grid grid-cols-2 gap-2 text-xs" style={{ color: 'hsl(0, 0%, 60%)' }}>
-            <div className="p-2 rounded" style={{ background: 'hsl(0, 0%, 13%)' }}>
-              <strong style={{ color: 'hsl(0, 0%, 80%)' }}>Swipe</strong> — Move cardinal
-            </div>
-            <div className="p-2 rounded" style={{ background: 'hsl(0, 0%, 13%)' }}>
-              <strong style={{ color: 'hsl(0, 0%, 80%)' }}>Tap tile</strong> — Move adjacent
-            </div>
-            <div className="p-2 rounded col-span-2" style={{ background: 'hsl(0, 0%, 13%)' }}>
-              <strong style={{ color: 'hsl(0, 0%, 80%)' }}>Abilities</strong> — Tap icon to arm, then swipe/tap to use
-            </div>
-          </div>
-        </div>
+        <button
+          onClick={() => { onShowTutorial(); onClose(); }}
+          className="w-full flex items-center gap-2 p-3 rounded-lg transition-all active:scale-95"
+          style={{ background: 'hsl(0, 0%, 13%)', border: '1px solid hsl(0, 0%, 20%)' }}
+        >
+          <HelpCircle size={18} style={{ color: 'hsl(210, 70%, 55%)' }} />
+          <span className="text-sm font-semibold" style={{ color: 'hsl(0, 0%, 85%)' }}>Show Tutorial</span>
+        </button>
       </div>
     </div>
   );
