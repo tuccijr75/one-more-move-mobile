@@ -5,6 +5,7 @@ import AbilityBar from '@/components/AbilityBar';
 import GameOverlay from '@/components/GameOverlay';
 import StageBanner from '@/components/StageBanner';
 import SettingsPanel from '@/components/SettingsPanel';
+import TutorialOverlay, { useTutorial } from '@/components/TutorialOverlay';
 import { type GameEngine, type HudData, type GameOverData, type Difficulty } from '@/game/engine';
 
 export default function Index() {
@@ -15,6 +16,7 @@ export default function Index() {
   const [muted, setMuted] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [armedAbility, setArmedAbility] = useState<string | null>(null);
+  const { showTutorial, dismissTutorial } = useTutorial();
 
   const onHudUpdate = useCallback((data: HudData) => {
     setHud(data);
@@ -140,6 +142,8 @@ export default function Index() {
           setSettingsOpen(false);
         }}
       />
+
+      {showTutorial && <TutorialOverlay onDismiss={dismissTutorial} />}
     </div>
   );
 }

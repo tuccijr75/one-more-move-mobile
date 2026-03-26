@@ -191,7 +191,7 @@ export default function GameCanvas({ onHudUpdate, onGameOver, onStageBanner, eng
   return (
     <div
       ref={containerRef}
-      className="aspect-square max-w-full max-h-[calc(100vh-12rem)] mx-auto"
+      className="aspect-square w-full max-h-[calc(100vh-9rem)] max-w-[calc(100vh-9rem)] mx-auto"
       style={{ touchAction: 'none' }}
     >
       <canvas
