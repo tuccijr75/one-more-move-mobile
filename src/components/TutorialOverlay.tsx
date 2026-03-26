@@ -133,5 +133,9 @@ export function useTutorial() {
     }
   }, []);
 
-  return { showTutorial: show, dismissTutorial: () => setShow(false) };
+  return {
+    showTutorial: show,
+    dismissTutorial: () => setShow(false),
+    openTutorial: () => setShow(true),
+  };
 }

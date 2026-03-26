@@ -16,7 +16,7 @@ export default function Index() {
   const [muted, setMuted] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [armedAbility, setArmedAbility] = useState<string | null>(null);
-  const { showTutorial, dismissTutorial } = useTutorial();
+  const { showTutorial, dismissTutorial, openTutorial } = useTutorial();
 
   const onHudUpdate = useCallback((data: HudData) => {
     setHud(data);
@@ -141,6 +141,7 @@ export default function Index() {
           handleDifficulty(d);
           setSettingsOpen(false);
         }}
+        onShowTutorial={openTutorial}
       />
 
       {showTutorial && <TutorialOverlay onDismiss={dismissTutorial} />}
