@@ -88,10 +88,10 @@ workflows:
         notify:
           success: true
           failure: true
-      # Uncomment below after setting up Google Play credentials in Codemagic
-      # google_play:
-      #   credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
-      #   track: internal
+      google_play:
+        credentials: $GCLOUD_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
 
   # ============================================
   # iOS WORKFLOW
